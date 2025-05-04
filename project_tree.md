@@ -1,4 +1,4 @@
-# 프로젝트 디렉터리 구조
+# 초기 프로젝트 디렉터리 구조
 
 plan_web/                  # 프로젝트 루트 디렉터리
   ├── app.py               # 플라스크 앱 진입점
@@ -7,7 +7,6 @@ plan_web/                  # 프로젝트 루트 디렉터리
   ├── README.md            # 프로젝트 설명 문서
   ├── project_tree.md      # 프로젝트 구조 문서(현재 파일)
   ├── .gitignore           # Git 무시 파일 목록
-  ├── .windsurfrules       # Windsurf 관련 설정 파일
   ├── instance/            # 인스턴스별 설정(비어있음)
   ├── models/              # 데이터 모델 관련 파일
   │   └── schedule.py      # 일정 관련 데이터 모델
