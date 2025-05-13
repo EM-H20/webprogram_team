@@ -1,3 +1,3 @@
 # routes 패키지 초기화
-from .main import bp as main_bp
+from .route import bp as route_bp
 from .api import bp as api_bp
