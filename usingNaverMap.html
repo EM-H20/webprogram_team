@@ -12,6 +12,7 @@
       type="text/javascript"
       src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=ra4y2dvddo&amp;submodules=panorama,geocoder,drawing,visualization"
     ></script>
+    <script type="text/javascript" src="../static/js/junbo.js"></script>
   </head>
   <style>
     .map {
@@ -31,6 +32,8 @@
     <div class="map" id="map"></div>
   </body>
   <script>
+    const pos = {};
+
     var latlng = new naver.maps.LatLng(37.549186395087, 127.07505567644); // 세종대 위치 (처음 지도에서 표시되는 위치)
 
     var mapOptions = {
@@ -92,8 +95,18 @@
               address +
               "</div>",
           });
-          console.log([latlng.lat(), latlng.lng(), address]);
           info.open(map, marker); // 정보 박스
+          // 폼 태그 -> 저장버튼 hidden 되어있던 폼 or 박스를 show 해서 여기서 잠시 대기
+
+          // case-work) 저장 버튼을 누르면 pos이 로컬 스토리지에 저장됨.
+          const markerObj = {
+            lat: latlng.lat(),
+            lng: latlng.lng(),
+            address: address /**, "place_name":name*/,
+          }; // name은 오른쪽 박스에서 사용자가 입력한 장소 이름
+          console.log(markerObj);
+          saveMarkerToLocalStorage(markerObj);
+          //pos junbo.js에 함수에 넣어서 local스토리지에 저장 되도록 하기기
         }
       );
     });
@@ -101,6 +114,7 @@
 </html>
 
 <!--
+태경님이 만들어주실 map, savePlace
 이 map에다가 hidden을 넣어서 옆에 box 를 생성 
 -> box에서 이름을 적고 저장 버튼을 누르면 local스토리지에 저장 
 -> local스토리지에 저장된 것은 다른 savePlace html에 저장 
