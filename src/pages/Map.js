@@ -12,9 +12,81 @@ function Map() {
   const [uploadedImage, setUploadedImage] = useState(null); // 업로드된 이미지
   const [imagePreview, setImagePreview] = useState(''); // 이미지 미리보기 URL
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [customAddress, setCustomAddress] = useState(''); // 사용자가 직접 입력한 주소
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  // 주소로 마커 위치 업데이트
+  const searchAddressAndUpdateMarker = () => {
+    if (!customAddress.trim() || !mapRef.current) return;
+
+    // 지오코딩 서비스를 사용하여 주소를 좌표로 변환
+    window.naver.maps.Service.geocode({
+      query: customAddress
+    }, (status, response) => {
+      if (status !== window.naver.maps.Service.Status.OK) {
+        alert('입력하신 주소를 찾을 수 없습니다. 다른 주소를 입력해주세요.');
+        return;
+      }
+
+      // 검색 결과가 없는 경우
+      if (response.v2.meta.totalCount === 0) {
+        alert('검색 결과가 없습니다. 다른 주소를 입력해주세요.');
+        return;
+      }
+
+      // 처음 검색된 주소 정보 가져오기
+      const firstItem = response.v2.addresses[0];
+      const position = new window.naver.maps.LatLng(firstItem.y, firstItem.x);
+      
+      // 지도 이동
+      mapRef.current.setCenter(position);
+      
+      // 기존 마커 제거
+      if (markerRef.current) {
+        markerRef.current.setMap(null);
+      }
+
+      // 새 마커 생성
+      const marker = new window.naver.maps.Marker({
+        position: position,
+        map: mapRef.current
+      });
+
+      markerRef.current = marker;
+
+      // 정보창 표시
+      const infoWindow = new window.naver.maps.InfoWindow({
+        content: `
+          <div style="padding: 10px; min-width: 200px;">
+            <p>위도: ${position.lat().toFixed(6)}</p>
+            <p>경도: ${position.lng().toFixed(6)}</p>
+            <p>주소: ${firstItem.roadAddress || firstItem.jibunAddress}</p>
+          </div>
+        `,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        anchorSize: new window.naver.maps.Size(10, 10)
+      });
+      
+      infoWindow.open(mapRef.current, marker);
+      
+      // 마커 정보 상태 업데이트
+      const updatedMarkerInfo = {
+        lat: position.lat(),
+        lng: position.lng(),
+        address: firstItem.roadAddress || firstItem.jibunAddress
+      };
+      
+      setMarkerInfo(updatedMarkerInfo);
+      
+      // 이미 주소가 입력되어 있으니 customAddress는 업데이트하지 않음
+    });
+  };
+
+  // 주소 입력 후 일정 시간이 지나면 자동으로 검색하는 기능 (선택적)
+  // 현재는 사용자가 검색 버튼을 클릭하거나 Enter 키를 누르는 경우에만 검색되도록 설정
 
   // 이미지 선택 핸들러
   const handleImageUpload = (e) => {
@@ -59,6 +131,14 @@ function Map() {
     }
     return '';
   };
+  
+  // 주소 입력 필드에서 Enter 키 입력 시 주소 검색 실행
+  const handleAddressKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      searchAddressAndUpdateMarker();
+    }
+  };
 
   // 장소를 localStorage에 저장
   const saveMarkerToLocalStorage = () => {
@@ -71,8 +151,11 @@ function Map() {
       return;
     }
     
+    // 사용자가 입력한 주소 사용
+    const finalAddress = customAddress.trim() || markerInfo.address;
+    
     // 장소 위치 (시/도) 추출
-    const location = extractLocation(markerInfo.address);
+    const location = extractLocation(finalAddress);
     
     // 현재 시간을 ID로 사용
     const id = new Date().getTime();
@@ -80,7 +163,7 @@ function Map() {
     const markerObj = {
       id: id,
       name: name,
-      address: markerInfo.address,
+      address: finalAddress,
       lat: markerInfo.lat,
       lng: markerInfo.lng,
       img: uploadedImage || defaultImage, // 업로드된 이미지 또는 기본 이미지
@@ -248,6 +331,7 @@ function Map() {
           };
           
           setMarkerInfo(markerData);
+          setCustomAddress(address); // 초기 주소를 사용자 입력용 상태에 설정
           setShowInput(true);
         });
       });
@@ -272,7 +356,27 @@ function Map() {
       {showInput && markerInfo && (
         <div className="marker-info">
           <h3>선택한 위치 정보</h3>
-          <p><strong>주소:</strong> {markerInfo.address}</p>
+          <div className="input-group">
+            <label htmlFor="address"><strong>주소:</strong></label>
+            <div className="address-input-container">
+              <input 
+                type="text" 
+                id="address" 
+                value={customAddress} 
+                onChange={(e) => setCustomAddress(e.target.value)}
+                onKeyPress={handleAddressKeyPress}
+                placeholder="주소를 입력하고 Enter 키나 검색 버튼 클릭"
+              />
+              <button 
+                type="button" 
+                className="search-address-btn"
+                onClick={searchAddressAndUpdateMarker}
+                title="주소로 검색"
+              >
+                🔍
+              </button>
+            </div>
+          </div>
           <p><strong>위도:</strong> {markerInfo.lat.toFixed(6)}, <strong>경도:</strong> {markerInfo.lng.toFixed(6)}</p>
           
           {/* 이미지 업로드 섹션 */}

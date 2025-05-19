@@ -190,6 +190,34 @@
   background-color: #f9f9f9;
 }
 
+/* 주소 검색 관련 스타일 */
+.address-input-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.search-address-btn {
+  padding: 8px 12px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+}
+
+.search-address-btn:hover {
+  background-color: #2980b9;
+}
+
 .image-upload-section {
   width: 100%;
   margin-bottom: 15px;
