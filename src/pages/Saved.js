@@ -224,11 +224,13 @@ export default function Saved() {
                   </button>
                 </div>
                 <div className="card__body">
-                  <h3 className="card__title">{item.titleEng || item.name}
+                  <h3 className="card__title">{item.name}
                     <span className="card__loc">/{item.location}</span>
                   </h3>
-                  <h4 className="card__kor">{item.titleKor || item.name}</h4>
                   <p className="card__addr">{item.address}</p>
+                  {item.description && (
+                    <p className="card__description">{item.description}</p>
+                  )}
                   <div className="card__meta">
                     <span>🏷️ Type: {item.type}</span>
                     <span>⏱️ Stay Time: {item.stay}</span>

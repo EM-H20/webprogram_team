@@ -7,15 +7,92 @@ function Map() {
   const [markerInfo, setMarkerInfo] = useState(null);
   const [showInput, setShowInput] = useState(false);
   const [placeName, setPlaceName] = useState('');
+  const [placeDescription, setPlaceDescription] = useState(''); // 장소 설명 추가
   const [placeType, setPlaceType] = useState('Landmark'); // 장소 유형
   const [stayTime, setStayTime] = useState('1h'); // 체류 시간
   const [uploadedImage, setUploadedImage] = useState(null); // 업로드된 이미지
   const [imagePreview, setImagePreview] = useState(''); // 이미지 미리보기 URL
   const [mapLoaded, setMapLoaded] = useState(false);
   const [customAddress, setCustomAddress] = useState(''); // 사용자가 직접 입력한 주소
+  const [searchQuery, setSearchQuery] = useState(''); // 장소 검색어 추가
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  // 장소명 또는 주소로 검색
+  const searchLocationByQuery = () => {
+    if (!searchQuery.trim() || !mapRef.current) return;
+
+    // 지오코딩 서비스를 사용하여 장소를 검색
+    window.naver.maps.Service.geocode({
+      query: searchQuery
+    }, (status, response) => {
+      if (status !== window.naver.maps.Service.Status.OK) {
+        alert('검색 결과가 없습니다. 다른 이름을 입력해주세요.');
+        return;
+      }
+
+      // 검색 결과가 없는 경우
+      if (response.v2.meta.totalCount === 0) {
+        alert('검색 결과가 없습니다. 다른 이름을 입력해주세요.');
+        return;
+      }
+
+      // 처음 검색된 장소 정보 가져오기
+      const firstItem = response.v2.addresses[0];
+      const position = new window.naver.maps.LatLng(firstItem.y, firstItem.x);
+      
+      // 이름과 주소를 자동으로 입력
+      if (!placeName.trim()) {
+        const nameFromSearch = searchQuery.split(' ')[0]; // 처음 단어를 이름으로 사용
+        setPlaceName(nameFromSearch);
+      }
+      
+      setCustomAddress(firstItem.roadAddress || firstItem.jibunAddress);
+      
+      // 지도 이동
+      mapRef.current.setCenter(position);
+      
+      // 기존 마커 제거
+      if (markerRef.current) {
+        markerRef.current.setMap(null);
+      }
+
+      // 새 마커 생성
+      const marker = new window.naver.maps.Marker({
+        position: position,
+        map: mapRef.current
+      });
+
+      markerRef.current = marker;
+
+      // 정보창 표시
+      const infoWindow = new window.naver.maps.InfoWindow({
+        content: `
+          <div style="padding: 10px; min-width: 200px;">
+            <p>위도: ${position.lat().toFixed(6)}</p>
+            <p>경도: ${position.lng().toFixed(6)}</p>
+            <p>주소: ${firstItem.roadAddress || firstItem.jibunAddress}</p>
+          </div>
+        `,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        anchorSize: new window.naver.maps.Size(10, 10)
+      });
+      
+      infoWindow.open(mapRef.current, marker);
+      
+      // 마커 정보 상태 업데이트
+      const updatedMarkerInfo = {
+        lat: position.lat(),
+        lng: position.lng(),
+        address: firstItem.roadAddress || firstItem.jibunAddress
+      };
+      
+      setMarkerInfo(updatedMarkerInfo);
+      setShowInput(true);
+    });
+  };
 
   // 주소로 마커 위치 업데이트
   const searchAddressAndUpdateMarker = () => {
@@ -139,6 +216,14 @@ function Map() {
       searchAddressAndUpdateMarker();
     }
   };
+  
+  // 장소명 검색 필드에서 Enter 키 입력 시 장소 검색 실행
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      searchLocationByQuery();
+    }
+  };
 
   // 장소를 localStorage에 저장
   const saveMarkerToLocalStorage = () => {
@@ -163,6 +248,7 @@ function Map() {
     const markerObj = {
       id: id,
       name: name,
+      description: placeDescription, // 장소 설명 추가
       address: finalAddress,
       lat: markerInfo.lat,
       lng: markerInfo.lng,
@@ -184,10 +270,12 @@ function Map() {
     // 저장 완료 알림 및 상태 초기화
     alert('위치가 저장되었습니다! Saved 메뉴에서 확인하세요.');
     setPlaceName('');
+    setPlaceDescription('');
     setPlaceType('Landmark');
     setStayTime('1h');
     setUploadedImage(null);
     setImagePreview('');
+    setSearchQuery('');
     setShowInput(false);
   };
 
@@ -349,6 +437,27 @@ function Map() {
           <p>네이버 지도 API를 로딩중입니다...</p>
         </div>
       )}
+      
+      {/* 장소명 검색 박스 */}
+      <div className="search-container">
+        <div className="search-box">
+          <input 
+            type="text" 
+            className="search-input" 
+            placeholder="장소명 또는 주소를 검색하세요" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleSearchKeyPress}
+          />
+          <button 
+            className="search-button" 
+            onClick={searchLocationByQuery}
+          >
+            검색
+          </button>
+        </div>
+      </div>
+
       <div className="map-container">
         <div id="map" style={{ width: '100%', height: '500px', border: '1px solid #ddd' }}></div>
       </div>
@@ -411,6 +520,18 @@ function Map() {
                 onChange={(e) => setPlaceName(e.target.value)} 
                 placeholder="장소 이름을 입력하세요"
               />
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="placeDescription">장소 설명:</label>
+              <textarea
+                id="placeDescription"
+                value={placeDescription}
+                onChange={(e) => setPlaceDescription(e.target.value)}
+                placeholder="장소에 대한 설명을 입력하세요"
+                rows="3"
+                className="description-textarea"
+              ></textarea>
             </div>
             
             <div className="input-group">
