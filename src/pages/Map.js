@@ -14,6 +14,7 @@ function Map() {
   const [imagePreview, setImagePreview] = useState(''); // 이미지 미리보기 URL
   const [mapLoaded, setMapLoaded] = useState(false);
   const [customAddress, setCustomAddress] = useState(''); // 사용자가 직접 입력한 주소
+  const [originalAddress, setOriginalAddress] = useState(''); // 네이버 API에서 받아온 원본 주소
   const [searchQuery, setSearchQuery] = useState(''); // 장소 검색어 추가
   const mapRef = useRef(null);
   const markerRef = useRef(null);
@@ -48,8 +49,11 @@ function Map() {
         setPlaceName(nameFromSearch);
       }
       
-      setCustomAddress(firstItem.roadAddress || firstItem.jibunAddress);
-      
+      // 주소 표시 및 마커 정보 업데이트
+      const fullAddress = firstItem.roadAddress || firstItem.jibunAddress;
+      setCustomAddress(fullAddress);
+      setOriginalAddress(fullAddress); // 원본 주소 저장
+
       // 지도 이동
       mapRef.current.setCenter(position);
       
@@ -82,14 +86,13 @@ function Map() {
       
       infoWindow.open(mapRef.current, marker);
       
-      // 마커 정보 상태 업데이트
-      const updatedMarkerInfo = {
+      // 마커 정보 업데이트
+      const newMarkerInfo = {
         lat: position.lat(),
         lng: position.lng(),
-        address: firstItem.roadAddress || firstItem.jibunAddress
+        address: fullAddress
       };
-      
-      setMarkerInfo(updatedMarkerInfo);
+      setMarkerInfo(newMarkerInfo);
       setShowInput(true);
     });
   };
@@ -236,8 +239,9 @@ function Map() {
       return;
     }
     
-    // 사용자가 입력한 주소 사용
-    const finalAddress = customAddress.trim() || markerInfo.address;
+    // 네이버 API에서 받아온 원본 주소를 우선적으로 사용
+    // 원본 주소가 없는 경우에만 사용자가 입력한 주소 사용
+    const finalAddress = originalAddress.trim() || markerInfo.address;
     
     // 장소 위치 (시/도) 추출
     const location = extractLocation(finalAddress);
@@ -276,6 +280,8 @@ function Map() {
     setUploadedImage(null);
     setImagePreview('');
     setSearchQuery('');
+    setCustomAddress('');
+    setOriginalAddress('');
     setShowInput(false);
   };
 
