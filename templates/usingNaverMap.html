@@ -25,9 +25,9 @@
   </style>
   <body>
     <div>
-      <form action="">
+      <!-- <form action="">
         <input type="text" placeholder="위치" />
-      </form>
+      </form> -->
     </div>
     <div class="map" id="map"></div>
   </body>
@@ -36,6 +36,11 @@
 
     var latlng = new naver.maps.LatLng(37.549186395087, 127.07505567644); // 세종대 위치 (처음 지도에서 표시되는 위치)
 
+    /**
+     * center: 맵의 중심을 어디에 위치시킬건지
+     * zoomControl: 사용자에게 지도 확대 축소 기능 열어줄건지
+     * zoom: 지도의 처음 배율
+     */
     var mapOptions = {
       center: new naver.maps.LatLng(latlng.lat(), latlng.lng()),
       zoomControl: true,
@@ -106,7 +111,7 @@
           }; // name은 오른쪽 박스에서 사용자가 입력한 장소 이름
           console.log(markerObj);
           saveMarkerToLocalStorage(markerObj);
-          //pos junbo.js에 함수에 넣어서 local스토리지에 저장 되도록 하기기
+          //pos junbo.js에 함수에 넣어서 local스토리지에 저장 되도록 하기
         }
       );
     });

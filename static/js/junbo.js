@@ -1,4 +1,6 @@
-// 버튼 눌렀을 때 obj가 LocalStorage에 저장되도록
+/**
+ * markerObj로 받아온 위치 정보 로컬 스토리지에 저장하는 함수
+ */
 function saveMarkerToLocalStorage(markerObj) {
   // 1. localStorage에 기존 데이터 불러오기
   let markers = JSON.parse(localStorage.getItem("markers")) || [];
