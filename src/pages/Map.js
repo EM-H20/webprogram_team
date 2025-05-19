@@ -1,27 +1,94 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './Map.css';
+import defaultImage from '../assets/dafault-place.png'; // 새로 추가된 기본 이미지 사용
 
 function Map() {
   // 상태 관리
   const [markerInfo, setMarkerInfo] = useState(null);
   const [showInput, setShowInput] = useState(false);
   const [placeName, setPlaceName] = useState('');
+  const [placeType, setPlaceType] = useState('Landmark'); // 장소 유형
+  const [stayTime, setStayTime] = useState('1h'); // 체류 시간
+  const [uploadedImage, setUploadedImage] = useState(null); // 업로드된 이미지
+  const [imagePreview, setImagePreview] = useState(''); // 이미지 미리보기 URL
   const [mapLoaded, setMapLoaded] = useState(false);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  // 이미지 선택 핸들러
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // 파일 크기 검사 (최대 5MB로 제한)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('이미지 크기는 5MB 이하여야 합니다.');
+        return;
+      }
+
+      // 파일 타입 검사
+      if (!file.type.match('image.*')) {
+        alert('이미지 파일만 업로드 가능합니다.');
+        return;
+      }
+
+      // 이미지를 Base64로 인코딩
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setUploadedImage(event.target.result); // Base64 문자열 저장
+        setImagePreview(event.target.result); // 미리보기용 URL 설정
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // 이미지 업로드 버튼 클릭 핸들러
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
+
+  // 주소에서 지역 추출 (예: "서울특별시 광진구..." -> "서울")
+  const extractLocation = (address) => {
+    if (!address) return '';
+    
+    // 시/도 추출 (서울특별시, 경기도 등)
+    const cityMatch = address.match(/([^\s]+시|[^\s]+도|[^\s]+군|[^\s]+구)/);
+    if (cityMatch) {
+      // "특별시", "광역시" 등의 접미사 제거
+      return cityMatch[0].replace(/특별시|광역시|자치시/, '').trim();
+    }
+    return '';
+  };
 
   // 장소를 localStorage에 저장
   const saveMarkerToLocalStorage = () => {
     if (!markerInfo) return;
     
-    // name이 없으면 기본값 설정
-    const name = placeName.trim() || `위치 ${new Date().toLocaleTimeString()}`;
+    // 필수 입력 확인
+    const name = placeName.trim();
+    if (!name) {
+      alert('장소 이름을 입력해주세요.');
+      return;
+    }
+    
+    // 장소 위치 (시/도) 추출
+    const location = extractLocation(markerInfo.address);
+    
+    // 현재 시간을 ID로 사용
+    const id = new Date().getTime();
     
     const markerObj = {
+      id: id,
       name: name,
       address: markerInfo.address,
       lat: markerInfo.lat,
-      lng: markerInfo.lng
+      lng: markerInfo.lng,
+      img: uploadedImage || defaultImage, // 업로드된 이미지 또는 기본 이미지
+      location: location, // 추출한 위치 (서울, 부산 등)
+      type: placeType, // 장소 유형
+      stay: stayTime, // 체류 시간
+      popular: false, // 기본값으로 인기 장소 아님
+      savedDate: new Date().toISOString() // 저장 날짜
     };
 
     // localStorage에 기존 데이터 불러오기
@@ -34,6 +101,10 @@ function Map() {
     // 저장 완료 알림 및 상태 초기화
     alert('위치가 저장되었습니다! Saved 메뉴에서 확인하세요.');
     setPlaceName('');
+    setPlaceType('Landmark');
+    setStayTime('1h');
+    setUploadedImage(null);
+    setImagePreview('');
     setShowInput(false);
   };
 
@@ -203,16 +274,77 @@ function Map() {
           <h3>선택한 위치 정보</h3>
           <p><strong>주소:</strong> {markerInfo.address}</p>
           <p><strong>위도:</strong> {markerInfo.lat.toFixed(6)}, <strong>경도:</strong> {markerInfo.lng.toFixed(6)}</p>
-          <div className="input-group">
-            <label htmlFor="placeName">장소 이름:</label>
+          
+          {/* 이미지 업로드 섹션 */}
+          <div className="image-upload-section">
+            <div className="image-preview-container" onClick={triggerFileInput}>
+              {imagePreview ? (
+                <img src={imagePreview} alt="장소 이미지 미리보기" className="image-preview" />
+              ) : (
+                <div className="upload-placeholder">
+                  <span>➕</span>
+                  <p>사진 추가</p>
+                </div>
+              )}
+            </div>
             <input 
-              type="text" 
-              id="placeName" 
-              value={placeName} 
-              onChange={(e) => setPlaceName(e.target.value)} 
-              placeholder="장소 이름을 입력하세요"
+              type="file" 
+              accept="image/*" 
+              onChange={handleImageUpload} 
+              ref={fileInputRef} 
+              style={{ display: 'none' }} 
             />
           </div>
+          
+          {/* 장소 정보 입력 폼 */}
+          <div className="form-container">
+            <div className="input-group">
+              <label htmlFor="placeName">장소 이름:</label>
+              <input 
+                type="text" 
+                id="placeName" 
+                value={placeName} 
+                onChange={(e) => setPlaceName(e.target.value)} 
+                placeholder="장소 이름을 입력하세요"
+              />
+            </div>
+            
+            <div className="input-group">
+              <label htmlFor="placeType">장소 유형:</label>
+              <select 
+                id="placeType" 
+                value={placeType}
+                onChange={(e) => setPlaceType(e.target.value)}
+              >
+                <option value="Landmark">랜드마크</option>
+                <option value="Restaurant">식당</option>
+                <option value="Cafe">카페</option>
+                <option value="Shopping">쇼핑</option>
+                <option value="Culture">문화/예술</option>
+                <option value="Nature">자연/공원</option>
+                <option value="Entertainment">엔터테인먼트</option>
+                <option value="Accommodation">숙박</option>
+              </select>
+            </div>
+            
+            <div className="input-group">
+              <label htmlFor="stayTime">체류 시간:</label>
+              <select 
+                id="stayTime" 
+                value={stayTime}
+                onChange={(e) => setStayTime(e.target.value)}
+              >
+                <option value="0.5h">30분</option>
+                <option value="1h">1시간</option>
+                <option value="1.5h">1시간 30분</option>
+                <option value="2h">2시간</option>
+                <option value="2–3h">2-3시간</option>
+                <option value="3–4h">3-4시간</option>
+                <option value="4h+">4시간 이상</option>
+              </select>
+            </div>
+          </div>
+          
           <button onClick={saveMarkerToLocalStorage} className="save-button">이 위치 저장하기</button>
         </div>
       )}

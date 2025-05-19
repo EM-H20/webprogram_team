@@ -87,7 +87,31 @@ export default function Saved() {
     const loadSavedLocations = () => {
       try {
         const markers = JSON.parse(localStorage.getItem('markers')) || [];
-        setSavedLocations(markers);
+        // 데이터 형식 확인 및 보완
+        const processedMarkers = markers.map(marker => ({
+          ...marker,
+          // 기본 이미지 없는 경우 처리 (내장된 이미지 사용)
+          img: marker.img || (marker.id % 6 === 0 ? img6 : 
+                marker.id % 5 === 0 ? img5 :
+                marker.id % 4 === 0 ? img4 :
+                marker.id % 3 === 0 ? img3 :
+                marker.id % 2 === 0 ? img2 : img1),
+          // id가 없는 경우 새로 생성
+          id: marker.id || new Date().getTime() + Math.floor(Math.random() * 1000),
+          // titleKor이 없으면 name으로 설정
+          titleKor: marker.titleKor || marker.name,
+          // titleEng가 없으면 name으로 설정
+          titleEng: marker.titleEng || marker.name,
+          // location이 없는 경우 주소에서 추출 시도
+          location: marker.location || extractLocation(marker.address) || 'Unknown',
+          // 기본 유형 설정
+          type: marker.type || 'Landmark',
+          // 기본 체류시간 설정
+          stay: marker.stay || '1h',
+          // 기본적으로 인기 아님
+          popular: marker.popular || false
+        }));
+        setSavedLocations(processedMarkers);
       } catch (error) {
         console.error('저장된 위치 정보를 불러오는 중 오류가 발생했습니다:', error);
         setSavedLocations([]);
@@ -96,6 +120,19 @@ export default function Saved() {
     
     loadSavedLocations();
   }, []);
+
+  // 주소에서 지역명 추출 함수
+  const extractLocation = (address) => {
+    if (!address) return '';
+    
+    // 시/도 추출 (서울특별시, 경기도 등)
+    const cityMatch = address.match(/([^\s]+시|[^\s]+도|[^\s]+군)/);
+    if (cityMatch) {
+      // "특별시", "광역시" 등의 접미사 제거
+      return cityMatch[0].replace(/특별시|광역시|자치시/, '').trim();
+    }
+    return '';
+  };
   
   // 저장된 위치 삭제 함수
   const deleteLocation = (index) => {
@@ -171,12 +208,13 @@ export default function Saved() {
             </div>
           ))
         ) : (
-          // Save 탭에서는 localStorage에 저장된 위치 정보 표시
+          // Save 탭에서는 localStorage에 저장된 위치 정보를 explore 형식으로 표시
           savedLocations.length > 0 ? (
             savedLocations.map((item, index) => (
-              <div key={index} className="grid__card saved-location-card">
-                <div className="card__img-wrapper location-marker">
-                  <div className="location-marker-icon">📍</div>
+              <div key={item.id || index} className="grid__card">
+                <div className="card__img-wrapper">
+                  <img src={item.img} alt={item.titleEng || item.name} />
+                  {item.popular && <span className="badge">POPULAR</span>}
                   <button 
                     className="delete-btn" 
                     onClick={() => deleteLocation(index)}
@@ -186,15 +224,19 @@ export default function Saved() {
                   </button>
                 </div>
                 <div className="card__body">
-                  <h3 className="card__title">{item.name}</h3>
+                  <h3 className="card__title">{item.titleEng || item.name}
+                    <span className="card__loc">/{item.location}</span>
+                  </h3>
+                  <h4 className="card__kor">{item.titleKor || item.name}</h4>
                   <p className="card__addr">{item.address}</p>
-                  <div className="card__meta location-coords">
+                  <div className="card__meta">
+                    <span>🏷️ Type: {item.type}</span>
+                    <span>⏱️ Stay Time: {item.stay}</span>
+                  </div>
+                  <div className="card__coords">
                     <span>🧭 위도: {item.lat.toFixed(6)}</span>
                     <span>🧭 경도: {item.lng.toFixed(6)}</span>
                   </div>
-                  <button className="view-on-map-btn">
-                    지도에서 보기
-                  </button>
                 </div>
               </div>
             ))
