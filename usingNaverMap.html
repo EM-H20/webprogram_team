@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>네이버 API 테스트</title>
+    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=ra4y2dvddo&amp;submodules=panorama,geocoder,drawing,visualization"></script>
+</head>
+<style>
+    .map {
+        width: 100%;
+        height: 700px;
+    }
+    .marker {
+        padding: 10px;
+    }
+</style>
+<body>
+<div>
+    <form action="">
+        <input type="text" placeholder="위치">
+    </form>
+</div>
+<div class="map" id="map"></div>
+</body>
+<script>
+    var latlng = new naver.maps.LatLng(37.549186395087, 127.07505567644); // 세종대 위치
+
+    var mapOptions = {
+        center: new naver.maps.LatLng(latlng.lat(), latlng.lng()),
+        zoomControl: true,
+        zoom: 16
+    };
+    var map = new naver.maps.Map('map', mapOptions);
+
+    navigator.geolocation.getCurrentPosition((position) => { // 현재 위치 정보 받아오기
+        latlng = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        console.log('현재 위치 : ' + latlng.lat() + ', ' + latlng.lng());
+        map.setCenter(latlng); // 비동기 처리때문에 넣은 임시 코드
+    }, () => {
+        console.log('현재 위치 정보를 가져올 수 없습니다.');
+    });
+
+    marker = null;
+    naver.maps.Event.addListener(map, 'click', function(e) {
+        latlng = e.coord;
+
+        if (marker) {
+            marker.setMap(null);
+        }
+
+        marker = new naver.maps.Marker({
+            position: latlng,
+            map: map
+        });
+
+        naver.maps.Service.reverseGeocode({
+                coords: latlng,
+                orders: [naver.maps.Service.OrderType.ADDR, naver.maps.Service.OrderType.ROAD_ADDR].join(','),
+            },
+            function (status, response) {
+                console.log(response);
+                var address = response.v2.address.roadAddress ? response.v2.address.roadAddress : response.v2.address.jibunAddress;
+                var info = new naver.maps.InfoWindow({
+                    content: '<div class="marker">위도: ' + latlng.lat().toFixed(6) + '<br>경도: ' + latlng.lng().toFixed(6) + '<br>' + address + '</div>'
+                });
+                info.open(map, marker);
+        });
+    });
+</script>
+</html>
