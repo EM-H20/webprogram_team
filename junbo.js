@@ -1,31 +1,13 @@
 // 버튼 눌렀을 때 obj가 LocalStorage에 저장되도록
-function saveMarkerToLocalStorage() {
-  // 1. 입력값 읽기
-  //test = html에서 마커를 눌렀을 때 오른쪽에 뜨는 입력창의 id를 의미
-  const name = document.getElementById("placeNameInput").value.trim();
-  if (!name) {
-    alert("장소 이름을 입력하세요!!");
-    return;
-  }
-  // 2. 마커 정보와 입력값 합치기
-  /* 
-        selectedMarkerInfo는 {lat, lng, address} 형태라고 가정
-        네이버 api에서 마커를 클릭했을 때 가져와지는 정보이다. 
-  */
-
-  const markerObj = {
-    ...selectedMarkerInfo, // 마커 정보: lat, lng, address 등
-    name, // 사용자가 입력한 장소 이름
-  };
-
-  // 3. localStorage에 기존 데이터 불러오기
+function saveMarkerToLocalStorage(markerObj) {
+  // 1. localStorage에 기존 데이터 불러오기
   let markers = JSON.parse(localStorage.getItem("markers")) || [];
   markers.push(markerObj);
 
-  // 4. localStorage에 저장
+  // 2. localStorage에 저장
   localStorage.setItem("markers", JSON.stringify(markers));
 
-  // 5. 알림 및 입력창 숨기기(선택)
+  // 3. 알림 및 입력창 숨기기(선택)
   //alert('저장 완료!');
   //document.getElementById('inputArea').style.display = 'none'; // 필요시
 }
