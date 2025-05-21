@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Home.css';
 
 const cardData = [
@@ -8,6 +9,13 @@ const cardData = [
 ];
 
 export default function Home() {
+  const navigate = useNavigate();
+
+  // 버튼 클릭 시 /map으로 이동
+  const handleGetStarted = () => {
+    navigate('/map');
+  };
+
   return (
     <>
       {/* Hero Section */}
@@ -16,7 +24,7 @@ export default function Home() {
         <p className="hero__subtitle">
           “Plan your next adventure with ease and convenience.”
         </p>
-        <button className="hero__button">Get Started</button>
+        <button className="hero__button" onClick={handleGetStarted}>Get Started</button>
       </section>
 
       {/* Info + Map + Cards Section */}
