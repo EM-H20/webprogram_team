@@ -450,7 +450,7 @@ function Map() {
           <input 
             type="text" 
             className="search-input" 
-            placeholder="장소를 검색하세요" 
+            placeholder="주소를 검색하세요" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleSearchKeyPress}
