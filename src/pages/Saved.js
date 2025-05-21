@@ -142,14 +142,18 @@ export default function Saved() {
     localStorage.setItem('markers', JSON.stringify(updatedLocations));
   };
 
-  // 탭과 검색어에 따라 필터링
-  const filtered = cardData.filter(item => {
-    // 'Save' 탭은 이제 저장한 위치를 보여주는 탭이므로 Explore와 Plan 탭에서만 cardData를 표시
-    const matchTab = activeTab === 'Explore' || 
-      (activeTab === 'Plan' && !item.popular);
-    const matchSearch = item.titleEng.toLowerCase()
-      .includes(search.toLowerCase());
-    return matchTab && matchSearch;
+  // Explore, Plan, Save 전체를 한 번에 검색 (탭 구분 없이 모든 카드+저장 장소 통합)
+  const allData = [
+    ...cardData,
+    ...savedLocations
+  ];
+  const lowerSearch = search.trim().toLowerCase();
+  const filtered = allData.filter(item => {
+    const matchSearch =
+      item.titleEng?.toLowerCase().includes(lowerSearch) ||
+      item.titleKor?.toLowerCase().includes(lowerSearch) ||
+      item.name?.toLowerCase().includes(lowerSearch);
+    return lowerSearch === '' || matchSearch;
   });
 
   return (
