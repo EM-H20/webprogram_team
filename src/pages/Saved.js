@@ -77,6 +77,43 @@ const cardData = [
   },
 ];
 
+// 재사용 가능한 카드 컴포넌트 분리
+function LocationCard({ item, showDelete, onDelete }) {
+  return (
+    <div className="grid__card">
+      <div className="card__img-wrapper">
+        <img src={item.img} alt={item.titleEng || item.name} />
+        {item.popular && <span className="badge">POPULAR</span>}
+        {showDelete ? (
+          <button className="delete-btn" onClick={onDelete} title="삭제하기">×</button>
+        ) : (
+          <span className="heart">♡</span>
+        )}
+      </div>
+      <div className="card__body">
+        <h3 className="card__title">{item.name || item.titleEng}
+          <span className="card__loc">/{item.location}</span>
+        </h3>
+        {item.titleKor && <h4 className="card__kor">{item.titleKor}</h4>}
+        <p className="card__addr">{item.address}</p>
+        {item.description && (
+          <p className="card__description">{item.description}</p>
+        )}
+        <div className="card__meta">
+          <span>🏷️ Type: {item.type}</span>
+          <span>⏱️ Stay Time: {item.stay}</span>
+        </div>
+        {item.lat !== undefined && item.lng !== undefined && (
+          <div className="card__coords">
+            <span>🧭 위도: {item.lat.toFixed(6)}</span>
+            <span>🧭 경도: {item.lng.toFixed(6)}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Saved() {
   const [activeTab, setActiveTab] = useState('Explore');
   const [search, setSearch] = useState('');
@@ -190,61 +227,20 @@ export default function Saved() {
       {/* Card Grid */}
       <div className="grid">
         {activeTab !== 'Save' ? (
-          // Explore 또는 Plan 탭에서는 기존 장소 카드 표시
+          // Explore 또는 Plan 탭에서는 기존 장소 카드 표시 (삭제 버튼 없음)
           filtered.map(item => (
-            <div key={item.id} className="grid__card">
-              <div className="card__img-wrapper">
-                <img src={item.img} alt={item.titleEng} />
-                {item.popular && <span className="badge">POPULAR</span>}
-                <span className="heart">♡</span>
-              </div>
-              <div className="card__body">
-                <h3 className="card__title">{item.titleEng}
-                  <span className="card__loc">/{item.location}</span>
-                </h3>
-                <h4 className="card__kor">{item.titleKor}</h4>
-                <p className="card__addr">{item.address}</p>
-                <div className="card__meta">
-                  <span>🏷️ Type: {item.type}</span>
-                  <span>⏱️ Stay Time: {item.stay}</span>
-                </div>
-              </div>
-            </div>
+            <LocationCard key={item.id} item={item} showDelete={false} />
           ))
         ) : (
-          // Save 탭에서는 localStorage에 저장된 위치 정보를 explore 형식으로 표시
+          // Save 탭에서는 localStorage에 저장된 위치 정보를 explore 형식으로 표시 (삭제 버튼 있음)
           savedLocations.length > 0 ? (
             savedLocations.map((item, index) => (
-              <div key={item.id || index} className="grid__card">
-                <div className="card__img-wrapper">
-                  <img src={item.img} alt={item.titleEng || item.name} />
-                  {item.popular && <span className="badge">POPULAR</span>}
-                  <button 
-                    className="delete-btn" 
-                    onClick={() => deleteLocation(index)}
-                    title="삭제하기"
-                  >
-                    ×
-                  </button>
-                </div>
-                <div className="card__body">
-                  <h3 className="card__title">{item.name}
-                    <span className="card__loc">/{item.location}</span>
-                  </h3>
-                  <p className="card__addr">{item.address}</p>
-                  {item.description && (
-                    <p className="card__description">{item.description}</p>
-                  )}
-                  <div className="card__meta">
-                    <span>🏷️ Type: {item.type}</span>
-                    <span>⏱️ Stay Time: {item.stay}</span>
-                  </div>
-                  <div className="card__coords">
-                    <span>🧭 위도: {item.lat.toFixed(6)}</span>
-                    <span>🧭 경도: {item.lng.toFixed(6)}</span>
-                  </div>
-                </div>
-              </div>
+              <LocationCard
+                key={item.id || index}
+                item={item}
+                showDelete={true}
+                onDelete={() => deleteLocation(index)}
+              />
             ))
           ) : (
             <div className="no-saved-locations">

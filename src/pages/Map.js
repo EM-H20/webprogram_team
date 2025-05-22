@@ -2,6 +2,45 @@ import React, { useEffect, useState, useRef } from 'react';
 import './Map.css';
 import defaultImage from '../assets/dafault-place.png'; // 새로 추가된 기본 이미지 사용
 
+// InfoWindow 생성 및 오픈을 담당하는 함수 (컴포넌트 내부에서 사용)
+function openInfoWindow({ map, marker, lat, lng, address }) {
+  const infoWindow = new window.naver.maps.InfoWindow({
+    content: `
+      <div style="padding: 10px; min-width: 200px;">
+        <p>위도: ${lat.toFixed(6)}</p>
+        <p>경도: ${lng.toFixed(6)}</p>
+        <p>주소: ${address}</p>
+      </div>
+    `,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    anchorSize: new window.naver.maps.Size(10, 10)
+  });
+  infoWindow.open(map, marker);
+}
+
+// 중복 제거: 기존 마커 제거
+function removeCurrentMarker(markerRef) {
+  if (markerRef.current) {
+    markerRef.current.setMap(null);
+  }
+}
+
+// 중복 제거: 새 마커 생성 및 등록
+function createAndRegisterMarker(position, mapRef, markerRef) {
+  const marker = new window.naver.maps.Marker({
+    position,
+    map: mapRef.current
+  });
+  markerRef.current = marker;
+  return marker;
+}
+
+// 중복 제거: 마커 정보 상태 업데이트
+function updateMarkerInfo(setMarkerInfo, lat, lng, address) {
+  setMarkerInfo({ lat, lng, address });
+}
+
 function Map() {
   // 상태 관리
   const [markerInfo, setMarkerInfo] = useState(null);
@@ -57,42 +96,23 @@ function Map() {
       // 지도 이동
       mapRef.current.setCenter(position);
       
-      // 기존 마커 제거
-      if (markerRef.current) {
-        markerRef.current.setMap(null);
-      }
+      // 기존 마커 제거 (함수로 분리)
+      removeCurrentMarker(markerRef);
 
-      // 새 마커 생성
-      const marker = new window.naver.maps.Marker({
-        position: position,
-        map: mapRef.current
-      });
+      // 새 마커 생성 및 등록 (함수로 분리)
+      const marker = createAndRegisterMarker(position, mapRef, markerRef);
 
-      markerRef.current = marker;
-
-      // 정보창 표시
-      const infoWindow = new window.naver.maps.InfoWindow({
-        content: `
-          <div style="padding: 10px; min-width: 200px;">
-            <p>위도: ${position.lat().toFixed(6)}</p>
-            <p>경도: ${position.lng().toFixed(6)}</p>
-            <p>주소: ${firstItem.roadAddress || firstItem.jibunAddress}</p>
-          </div>
-        `,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        anchorSize: new window.naver.maps.Size(10, 10)
-      });
-      
-      infoWindow.open(mapRef.current, marker);
-      
-      // 마커 정보 업데이트
-      const newMarkerInfo = {
+      // 정보창 표시 (함수로 분리)
+      openInfoWindow({
+        map: mapRef.current,
+        marker,
         lat: position.lat(),
         lng: position.lng(),
-        address: fullAddress
-      };
-      setMarkerInfo(newMarkerInfo);
+        address: firstItem.roadAddress || firstItem.jibunAddress
+      });
+
+      // 마커 정보 업데이트 (함수로 분리)
+      updateMarkerInfo(setMarkerInfo, position.lat(), position.lng(), fullAddress);
       setShowInput(true);
     });
   };
@@ -123,43 +143,23 @@ function Map() {
       // 지도 이동
       mapRef.current.setCenter(position);
       
-      // 기존 마커 제거
-      if (markerRef.current) {
-        markerRef.current.setMap(null);
-      }
+      // 기존 마커 제거 (함수로 분리)
+      removeCurrentMarker(markerRef);
 
-      // 새 마커 생성
-      const marker = new window.naver.maps.Marker({
-        position: position,
-        map: mapRef.current
-      });
+      // 새 마커 생성 및 등록 (함수로 분리)
+      const marker = createAndRegisterMarker(position, mapRef, markerRef);
 
-      markerRef.current = marker;
-
-      // 정보창 표시
-      const infoWindow = new window.naver.maps.InfoWindow({
-        content: `
-          <div style="padding: 10px; min-width: 200px;">
-            <p>위도: ${position.lat().toFixed(6)}</p>
-            <p>경도: ${position.lng().toFixed(6)}</p>
-            <p>주소: ${firstItem.roadAddress || firstItem.jibunAddress}</p>
-          </div>
-        `,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        anchorSize: new window.naver.maps.Size(10, 10)
-      });
-      
-      infoWindow.open(mapRef.current, marker);
-      
-      // 마커 정보 상태 업데이트
-      const updatedMarkerInfo = {
+      // 정보창 표시 (함수로 분리)
+      openInfoWindow({
+        map: mapRef.current,
+        marker,
         lat: position.lat(),
         lng: position.lng(),
         address: firstItem.roadAddress || firstItem.jibunAddress
-      };
-      
-      setMarkerInfo(updatedMarkerInfo);
+      });
+
+      // 마커 정보 상태 업데이트 (함수로 분리)
+      updateMarkerInfo(setMarkerInfo, position.lat(), position.lng(), firstItem.roadAddress || firstItem.jibunAddress);
       
       // 이미 주소가 입력되어 있으니 customAddress는 업데이트하지 않음
     });
@@ -401,21 +401,14 @@ function Map() {
           const result = response.v2;
           const address = result.address.roadAddress || result.address.jibunAddress;
           
-          // 정보창 표시
-          const infoWindow = new window.naver.maps.InfoWindow({
-            content: `
-              <div style="padding: 10px; min-width: 200px;">
-                <p>위도: ${clickedPosition.lat().toFixed(6)}</p>
-                <p>경도: ${clickedPosition.lng().toFixed(6)}</p>
-                <p>주소: ${address}</p>
-              </div>
-            `,
-            borderColor: '#ccc',
-            borderWidth: 1,
-            anchorSize: new window.naver.maps.Size(10, 10)
+          // 정보창 표시 (함수로 분리)
+          openInfoWindow({
+            map,
+            marker,
+            lat: clickedPosition.lat(),
+            lng: clickedPosition.lng(),
+            address
           });
-          
-          infoWindow.open(map, marker);
           
           // 마커 정보 업데이트
           const markerData = {
@@ -450,7 +443,7 @@ function Map() {
           <input 
             type="text" 
             className="search-input" 
-            placeholder="주소를 검색하세요" 
+            placeholder="장소를 검색하세요" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleSearchKeyPress}
