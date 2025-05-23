@@ -78,6 +78,8 @@ function Map() {
         return;
       }
 
+
+
       // 처음 검색된 장소 정보 가져오기
       const firstItem = response.v2.addresses[0];
       const position = new window.naver.maps.LatLng(firstItem.y, firstItem.x);
@@ -261,7 +263,8 @@ function Map() {
       type: placeType, // 장소 유형
       stay: stayTime, // 체류 시간
       popular: false, // 기본값으로 인기 장소 아님
-      savedDate: new Date().toISOString() // 저장 날짜
+      savedDate: new Date().toISOString(), // 저장 날짜
+      favorite: false,
     };
 
     // localStorage에 기존 데이터 불러오기

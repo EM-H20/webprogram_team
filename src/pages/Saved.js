@@ -8,6 +8,7 @@ import img5 from '../assets/경복궁.PNG';
 import img6 from '../assets/롯데타워.PNG';
 
 const tabList = ['Explore', 'Plan', 'Save'];
+/*
 const cardData = [
   {
     id: 1,
@@ -19,6 +20,7 @@ const cardData = [
     type: 'Landmark',
     stay: '1h',
     popular: true,
+    favorite: false,
   },
   {
     id: 2,
@@ -30,6 +32,7 @@ const cardData = [
     type: 'Culture · Traditional',
     stay: '2h',
     popular: true,
+    favorite: false,
   },
   {
     id: 3,
@@ -41,6 +44,7 @@ const cardData = [
     type: 'University',
     stay: '1h',
     popular: true,
+    favorite: false,
   },
   {
     id: 4,
@@ -52,6 +56,7 @@ const cardData = [
     type: 'Park · Family',
     stay: '2–3h',
     popular: false,
+    favorite: false,
   },
   {
     id: 5,
@@ -63,6 +68,7 @@ const cardData = [
     type: 'Palace · Heritage',
     stay: '1.5h',
     popular: false,
+    favorite: false,
   },
   {
     id: 6,
@@ -74,11 +80,13 @@ const cardData = [
     type: 'Landmark · Shopping',
     stay: '2–3h',
     popular: false,
+    favorite: false,
   },
 ];
+*/
 
 // 재사용 가능한 카드 컴포넌트 분리
-function LocationCard({ item, showDelete, onDelete }) {
+function LocationCard({ item, showDelete, onDelete, onFavorite }) {
   return (
     <div className="grid__card">
       <div className="card__img-wrapper">
@@ -87,7 +95,7 @@ function LocationCard({ item, showDelete, onDelete }) {
         {showDelete ? (
           <button className="delete-btn" onClick={onDelete} title="삭제하기">×</button>
         ) : (
-          <span className="heart">♡</span>
+          <span className="heart" onClick={onFavorite}>{item.favorite ? '♥' : '♡'}</span>
         )}
       </div>
       <div className="card__body">
@@ -146,7 +154,8 @@ export default function Saved() {
           // 기본 체류시간 설정
           stay: marker.stay || '1h',
           // 기본적으로 인기 아님
-          popular: marker.popular || false
+          popular: marker.popular || false,
+          favorite: marker.favorite || false
         }));
         setSavedLocations(processedMarkers);
       } catch (error) {
@@ -178,10 +187,16 @@ export default function Saved() {
     setSavedLocations(updatedLocations);
     localStorage.setItem('markers', JSON.stringify(updatedLocations));
   };
-
+  const handleFavorite = (index) => {
+    console.log("성공");
+    const updatedFavorite = [...savedLocations]
+    updatedFavorite[index].favorite = !updatedFavorite[index].favorite; 
+    setSavedLocations(updatedFavorite);
+    localStorage.setItem('markers', JSON.stringify(updatedFavorite));
+  };
   // Explore, Plan, Save 전체를 한 번에 검색 (탭 구분 없이 모든 카드+저장 장소 통합)
   const allData = [
-    ...cardData,
+    //...cardData,
     ...savedLocations
   ];
   const lowerSearch = search.trim().toLowerCase();
@@ -228,8 +243,8 @@ export default function Saved() {
       <div className="grid">
         {activeTab !== 'Save' ? (
           // Explore 또는 Plan 탭에서는 기존 장소 카드 표시 (삭제 버튼 없음)
-          filtered.map(item => (
-            <LocationCard key={item.id} item={item} showDelete={false} />
+          filtered.map((item,index) => (
+            <LocationCard key={item.id} item={item} showDelete={false} onFavorite={()=> handleFavorite(index)}/>
           ))
         ) : (
           // Save 탭에서는 localStorage에 저장된 위치 정보를 explore 형식으로 표시 (삭제 버튼 있음)
