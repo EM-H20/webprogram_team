@@ -9,12 +9,11 @@ const port = 5001;
 // CORS 허용
 app.use(cors());
 
+// POST JSON 파싱
+app.use(express.json());
+
 app.get('/api/search', async (req, res) => {
   const { query } = req.query;
-
-  if (!query) {
-    return res.status(400).json({ error: '파라미터가 안들어옴' });
-  }
 
   try {
     const response = await axios.get('https://openapi.naver.com/v1/search/local.json', {
@@ -131,6 +130,22 @@ app.get('/api/poi', async (req, res) => {
   } catch (error) {
     console.error('Kakao API 실패:', error);
     res.status(500).json({ error: 'Kakao API 사용 실패', detail: error.message });
+  }
+});
+
+app.get('/api/route', async (req, res) => {
+  const { start, goal } = req.query;
+  try {
+    const response = await axios.get('https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving', {
+      params: { start, goal },
+      headers: {
+        'X-NCP-APIGW-API-KEY-ID': process.env.NCP_CLIENT_ID,
+        'X-NCP-APIGW-API-KEY': process.env.NCP_CLIENT_SECRET
+      }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: '경로 검색 실패', detail: err.message });
   }
 });
 

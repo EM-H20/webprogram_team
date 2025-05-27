@@ -54,6 +54,46 @@ const getNearestPlace = (lat, lng, items) => {
   return items.sort((a, b) => a.distance - b.distance)[0]; // 가장 가까운 1개
 };
 
+async function showRouteBetweenPoints({ startLat, startLng, endLat, endLng, map }) {
+  const routeData = await fetchNaverRoute(startLat, startLng, endLat, endLng);
+  if (routeData) {
+    drawRouteOnMap(map, routeData);
+  }
+}
+
+let currentRoutePolyline = null;
+
+function drawRouteOnMap(map, pathData) {
+  if (!pathData?.route?.traoptimal?.[0]?.path) {
+    console.log('경로 데이터가 올바르지 않습니다.');
+    return;
+  }
+
+  const rawPath = pathData.route.traoptimal[0].path;
+  const convertedPath = rawPath.map(([lng, lat]) => new window.naver.maps.LatLng(lat, lng));
+
+  currentRoutePolyline = new window.naver.maps.Polyline({
+    map: map,
+    path: convertedPath,
+    strokeColor: '#007BFF',
+    strokeWeight: 5
+  });
+}
+
+async function fetchNaverRoute(startLat, startLng, endLat, endLng) {
+  const start = `${startLng},${startLat}`;  // 경로는 "lng,lat" 순서
+  const goal = `${endLng},${endLat}`;
+
+  try {
+    const response = await fetch(`http://localhost:5001/api/route?start=${start}&goal=${goal}`);
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error('경로 API 호출 실패:', err);
+    return null;
+  }
+}
+
 // 중복 제거: 기존 마커 제거
 function removeCurrentMarker(markerRef) {
   if (markerRef.current) {
@@ -412,6 +452,8 @@ function Map() {
         // 클릭한 위치 좌표
         const clickedPosition = e.coord;
         
+        const beforemarker = markerRef.current;
+        
         // 기존 마커 제거
         removeCurrentMarker(markerRef)
         
@@ -451,6 +493,21 @@ function Map() {
             lng: clickedPosition.lng(),
             address: address
           };
+          
+          // 두 지점 사이에 경로가 잘 그려지는지 임시로 작성한 코드
+          // if(beforemarker != null) {
+          //   const beforeLat = beforemarker.getPosition().lat();
+          //   const beforeLng = beforemarker.getPosition().lng();
+            
+          //   if(currentRoutePolyline) currentRoutePolyline.setMap(null);
+          //   showRouteBetweenPoints({
+          //     startLat: beforeLat,
+          //     startLng: beforeLng,
+          //     endLat: clickedPosition.lat(),
+          //     endLng: clickedPosition.lng(),
+          //     map: map
+          //   });
+          // }
           
           setMarkerInfo(markerData);
           setCustomAddress(address); // 초기 주소를 사용자 입력용 상태에 설정
