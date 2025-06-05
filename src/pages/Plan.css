@@ -1,0 +1,173 @@
+/* src/components/PlanPage.css */
+
+/* 전체 페이지 래퍼 */
+.plan-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 2rem;
+  min-height: calc(100vh - /* header 높이 */ 80px - /* footer 높이 */ 60px);
+}
+
+/* 1) 상단 타이틀 영역 */
+.plan-page__header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.plan-page__title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 0.5rem;
+}
+
+.plan-page__subtitle {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* 2) 탭 및 필터 아이콘 영역 */
+.plan-page__controls {
+  display: flex;
+  max-width: 1200px;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+.plan-page__tabs {
+  background: #f0f4ff;
+  border-radius: 8px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #f0f4ff;
+  display: flex;
+  overflow: hidden;
+}
+.tab {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #666;
+  transition: background 0.2s, color 0.2s;
+}
+.tab:hover {
+  background: rgba(51, 102, 255, 0.1);
+}
+.tab--active {
+  background: #fff;
+  color: #3366ff;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* 3) 메인 콘텐츠: 좌/우 분할 */
+.plan-page__content {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* 3-1) 좌측 카드 리스트 */
+.plan-page__list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 개별 카드 */
+.card {
+  padding: 10px;
+  display: flex;
+  height: 180px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* 카드 이미지 (왼쪽) */
+.card__image {
+  width: 230px;
+  height: "100%";
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+/* 카드 텍스트 부분 (오른쪽) */
+.card__body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+
+/* 카드 제목 + 하트 버튼 */
+.card__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2a56;
+}
+
+.card__heart-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 카드 설명 텍스트 */
+.card__desc {
+  font-size: 0.9rem;
+  color: #5a5d7d;
+  margin: 0.5rem 0;
+  white-space: pre-wrap; /* 줄바꿈(\n)을 반영 */
+}
+
+/* 카드 주소 (아이콘 + 텍스트) */
+.card__address {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #77798f;
+}
+
+.card__address-icon {
+  margin-right: 0.5rem;
+}
+
+/* 3-2) 우측 지도 영역 */
+.plan-page__map {
+  flex: 1;
+  min-height: 500px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 지도가 실제로 들어갈 플레이스홀더 */
+.map-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #eef1f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a1a6bf;
+  font-size: 1rem;
+  user-select: none;
+}
