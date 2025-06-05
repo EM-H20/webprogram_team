@@ -7,7 +7,7 @@ import img4 from '../assets/어린이대공원.PNG';
 import img5 from '../assets/경복궁.PNG';
 import img6 from '../assets/롯데타워.PNG';
 
-const tabList = ['Explore', 'Plan', 'Save'];
+const tabList = ['Explore', 'Favorite', 'Save'];
 /*
 const cardData = [
   {
@@ -85,6 +85,27 @@ const cardData = [
 ];
 */
 
+// SVG 아이콘 컴포넌트 분리
+const HeartIcon = ({ filled }) => (
+  filled ? (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ff4b4b" stroke="#ff4b4b" strokeWidth="1">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    </svg>
+  ) : (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    </svg>
+  )
+);
+
+// 빈 상태 메시지 컴포넌트 분리
+const EmptyStateMessage = ({ primaryText, secondaryText }) => (
+  <div className="no-saved-locations">
+    <p>{primaryText}</p>
+    <p>{secondaryText}</p>
+  </div>
+);
+
 // 재사용 가능한 카드 컴포넌트 분리
 function LocationCard({ item, showDelete, onDelete, onFavorite }) {
   return (
@@ -95,7 +116,9 @@ function LocationCard({ item, showDelete, onDelete, onFavorite }) {
         {showDelete ? (
           <button className="delete-btn" onClick={onDelete} title="삭제하기">×</button>
         ) : (
-          <span className="heart" onClick={onFavorite}>{item.favorite ? '♥' : '♡'}</span>
+          <span className="heart" onClick={onFavorite}>
+            <HeartIcon filled={item.favorite} />
+          </span>
         )}
       </div>
       <div className="card__body">
@@ -196,18 +219,36 @@ export default function Saved() {
     localStorage.setItem('markers', JSON.stringify(updatedFavorite));
   };
   // Explore, Plan, Save 전체를 한 번에 검색 (탭 구분 없이 모든 카드+저장 장소 통합)
+  // 검색 필터링 로직을 함수로 추출하여 재사용
+  const matchesSearchTerm = (item, searchTerm) => {
+    const lowerSearch = searchTerm.toLowerCase();
+    return (
+      (item.titleEng && item.titleEng.toLowerCase().includes(lowerSearch)) ||
+      (item.name && item.name.toLowerCase().includes(lowerSearch)) ||
+      (item.titleKor && item.titleKor.toLowerCase().includes(lowerSearch)) ||
+      (item.location && item.location.toLowerCase().includes(lowerSearch)) ||
+      (item.type && item.type.toLowerCase().includes(lowerSearch))
+    );
+  };
+
+  const filteredData = () => {
+    if (activeTab === 'Explore') {
+      // 전체 데이터에서 검색
+      return allData.filter(item => matchesSearchTerm(item, search));
+    } else if (activeTab === 'Favorite') {
+      // 'Favorite' 탭 로직 구현 - 즐겨찾기된 위치만 표시
+      return savedLocations.filter(item => item.favorite && matchesSearchTerm(item, search));
+    } else if (activeTab === 'Save') {
+      // 'Save' 탭 로직 구현 - 저장된 위치만 표시
+      return savedLocations.filter(item => matchesSearchTerm(item, search));
+    }
+    return [];
+  };
+
   const allData = [
     //...cardData,
     ...savedLocations
   ];
-  const lowerSearch = search.trim().toLowerCase();
-  const filtered = allData.filter(item => {
-    const matchSearch =
-      item.titleEng?.toLowerCase().includes(lowerSearch) ||
-      item.titleKor?.toLowerCase().includes(lowerSearch) ||
-      item.name?.toLowerCase().includes(lowerSearch);
-    return lowerSearch === '' || matchSearch;
-  });
 
   return (
     <main className="saved">
@@ -244,7 +285,7 @@ export default function Saved() {
       <div className="grid">
         {activeTab !== 'Save' ? (
           // Explore 또는 Plan 탭에서는 기존 장소 카드 표시 (삭제 버튼 없음)
-          filtered.map((item,index) => (
+          filteredData().map((item,index) => (
             <LocationCard key={item.id} item={item} showDelete={false} onFavorite={()=> handleFavorite(index)}/>
           ))
         ) : (
@@ -259,11 +300,17 @@ export default function Saved() {
               />
             ))
           ) : (
-            <div className="no-saved-locations">
-              <p>저장된 위치가 없습니다.</p>
-              <p>지도에서 위치를 저장해보세요!</p>
-            </div>
+            <EmptyStateMessage 
+              primaryText="저장된 위치가 없습니다."
+              secondaryText="지도에서 위치를 저장해보세요!"
+            />
           )
+        )}
+        {activeTab === 'Favorite' && filteredData().length === 0 && (
+          <EmptyStateMessage 
+            primaryText="즐겨찾기한 장소가 없습니다."
+            secondaryText="하트 아이콘을 클릭하여 즐겨찾기에 추가해보세요!"
+          />
         )}
       </div>
 
