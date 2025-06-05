@@ -6,9 +6,9 @@ import logo from '../assets/logo.png';
 const links = [
   { name: 'Home',   path: '/' },
   { name: 'Map',    path: '/map' },
-  { name: 'Service',path: '/service' },
-  { name: 'Saved',  path: '/saved' },
-  { name: 'About Us', path: '/about' },
+  { name: 'Plan',path: '/plan' },
+  { name: 'Place',  path: '/place' },
+  { name: 'About Us', path: '/aboutus' },
 ];
 
 export default function Header() {
