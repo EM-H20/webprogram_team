@@ -1,0 +1,172 @@
+/* Modal_edit.css */
+
+/* 오버레이 */
+.modal_edit_modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* 모달 박스 */
+.modal_edit_modal {
+  background: #fff;
+  border-radius: 8px;
+  width: 800px;
+  max-width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 헤더 */
+.modal_edit_modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal_edit_modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.modal_edit_modal-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #666;
+}
+.modal_edit_modal-close:hover {
+  color: #e74c3c;
+}
+
+/* 바디 */
+.modal_edit_modal-body {
+  padding: 20px;
+}
+
+.modal_edit_modal-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.modal_edit_modal-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* plan_card 스타일 (재사용) */
+.modal_edit_plan_card {
+  display: flex;
+  align-items: start;
+  background: #fafafa;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+.modal_edit_plan_card__image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.modal_edit_plan_card__body {
+  padding: 8px 12px;
+  flex: 1;
+}
+
+.modal_edit_plan_card__title span {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #222;
+}
+
+.modal_edit_plan_card__desc {
+  margin: 4px 0;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.modal_edit_plan_card__address span {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+/* 삭제 버튼 */
+.modal_edit_plan_card__delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.modal_edit_plan_card__delete:hover {
+  color: #e74c3c;
+}
+
+/* 장소 추가 버튼 */
+.modal_edit_modal-edit_add-button {
+
+  padding: 16px;
+  height: 120px;
+  background: #f0f0f0;
+  border: 2px dashed #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #666;
+  text-align: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.modal_edit_modal-edit_add-button:hover {
+  background: #e8e8e8;
+  border-color: #bbb;
+}
+
+/* 푸터 */
+.modal_edit_modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal_edit_btn-create {
+  background-color: #0061f2;
+  color: #fff;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.modal_edit_btn-create:hover {
+  background-color: #0051c7;
+}

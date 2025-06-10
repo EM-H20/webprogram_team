@@ -1,0 +1,130 @@
+/* src/components/AboutUs.css */
+
+/* ─────────────── 전체 페이지 래퍼 ─────────────── */
+.about-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 2rem; /* 위아래 3rem, 좌우 2rem */
+  min-height: calc(100vh - 80px - 60px);
+}
+
+/* ────────────── 1) 타이틀 영역 ────────────── */
+.about-page__header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.about-page__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2a56;
+  margin-bottom: 0.5rem;
+}
+
+.about-page__subtitle {
+  font-size: 1rem;
+  color: #6c6f85;
+}
+
+/* ──────── 2) 팀원 카드 리스트 (2열 그리드) ──────── */
+.about-page__team {
+  display: flex;
+  flex-wrap: wrap;          /* 줄 바꿈 허용 */
+  gap: 2rem;                /* 카드 사이 간격: 2rem */
+  width: 100%;
+  max-width: 1200px;         /* 2열 배치 시 적당한 최대 너비 */
+  justify-content: center;  
+}
+
+/* ──────── 개별 팀원 카드 ──────── */
+.about-card {
+  position: relative;       /* 이미지 래퍼 절대 위치 기준 */
+  display: flex;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  /* 한 줄에 2개씩 배치하기 위한 기본 너비(50% - gap) */
+  flex: 0 1 calc(50% - 2rem);
+  min-width: 260px;         /* 너무 좁아지지 않도록 최소 너비 설정 */
+  height: 250px;            /* 카드 높이: 필요에 따라 조정 가능 */
+}
+
+/* 2-1) 이미지 래퍼 */
+.about-card__image-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 200px;               /* 기존 100px → 150px */
+  overflow: hidden;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.about-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 텍스트에도 동일한 값으로 밀어주기 */
+.about-card__body {
+  margin-left: 200px;         /* 기존 100px → 150px */
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 팀원 이름 */
+.about-card__name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2a56;
+  margin-bottom: 0.25rem;
+}
+
+/* 팀원 역할 */
+.about-card__role {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #3366ff;
+  margin-bottom: 0.5rem;
+}
+
+/* 팀원 간단 설명 */
+.about-card__desc {
+  font-size: 0.9rem;
+  color: #5a5d7d;
+  line-height: 1.4;
+}
+
+/* ──────── 반응형(간단) ──────── */
+/* 화면 너비가 700px 이하일 때: 1열로 쌓이도록 변경 */
+@media (max-width: 700px) {
+  .about-page__team {
+    justify-content: center; /* 가운데 정렬 유지 */
+  }
+  .about-card {
+    flex: 0 1 100%;         /* 한 줄에 카드 1개씩 */
+    min-width: auto;
+    height: auto;           /* 높이 자동 (내용에 맞춤) */
+  }
+  .about-card__image-wrapper {
+    position: relative;     /* 세로 스택 시 상대 위치로 변경 */
+    width: 100%;
+    height: 180px;          /* 세로 스택에서 이미지 높이 */
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .about-card__body {
+    margin-left: 0;         /* 이미지 아래에 텍스트 순차 배치 */
+    padding: 1rem;
+  }
+}
