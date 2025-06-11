@@ -1,7 +1,0 @@
-//cmd에 한줄씩 입력
-cd desktop
-npx create-react-app my-app
-//배경화면에 생성된 my-app 폴더 안의 src 파일 전체를 깃에 올라와있는 src로 대체
-cd my-app
-npm install react-router-dom
-npm start
