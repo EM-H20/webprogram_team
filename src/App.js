@@ -4,10 +4,9 @@ import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Map from './pages/Map';
-import Plan from './pages/Plan';
+import Plan from './pages/Plan'
 import Place from './pages/Place';
 import AboutUs from './pages/AboutUs';
-
 import Footer from './components/Footer';
 
 export default function App() {
@@ -21,12 +20,16 @@ export default function App() {
 
         {/* 기타 페이지 */}
         <Route path="/map" element={<Map />} />
-        <Route path="/place" element={<Place />} />
-        <Route path="/plan" element={<Plan />} />
-        <Route path="/aboutus" element={<AboutUs />} />
+        {/* <Route path="/service" element={<ServicePage/>} /> */}
 
-        {/* About Us 등 */}
-        {/* <Route path="/about" element={<AboutPage />} /> */}
+        {/* Plan 페이지 */}
+        <Route path="/plan" element={<Plan />} />
+
+        {/* Place 페이지 */}
+        <Route path="/place" element={<Place />} />
+
+        {/* About Us 페이지 */}
+        <Route path="/aboutUs" element={<AboutUs />} />
 
         {/* 그 외 404 */}
         {/* <Route path="*" element={<NotFound />} /> */}

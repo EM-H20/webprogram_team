@@ -1,4 +1,4 @@
-/* src/components/PlanPage.css */
+/* src/components/Plan.css */
 
 /* 전체 페이지 래퍼 */
 .plan-page {
@@ -6,7 +6,7 @@
   flex-direction: column;
   align-items: center;
   padding: 4rem 2rem;
-  min-height: calc(100vh - /* header 높이 */ 80px - /* footer 높이 */ 60px);
+  min-height: calc(100vh - 80px - 60px);
 }
 
 /* 1) 상단 타이틀 영역 */
@@ -14,14 +14,12 @@
   text-align: center;
   margin-bottom: 2rem;
 }
-
 .plan-page__title {
   font-size: 2rem;
   font-weight: 700;
   color: #111;
   margin-bottom: 0.5rem;
 }
-
 .plan-page__subtitle {
   font-size: 1rem;
   color: #555;
@@ -30,19 +28,17 @@
 /* 2) 탭 및 필터 아이콘 영역 */
 .plan-page__controls {
   display: flex;
-  max-width: 1200px;
+  max-width: 1170px;
   width: 100%;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin: 0 auto 2rem;
   flex-wrap: wrap;
 }
 .plan-page__tabs {
   background: #f0f4ff;
   border-radius: 8px;
-  border-width: 6px;
-  border-style: solid;
-  border-color: #f0f4ff;
+  border: 6px solid #f0f4ff;
   display: flex;
   overflow: hidden;
 }
@@ -79,6 +75,7 @@
   gap: 2rem;
   width: 100%;
   max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* 3-1) 좌측 카드 리스트 */
@@ -87,17 +84,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-height: 600px;   /* 스크롤이 걸릴 최대 높이 (지도 높이와 동일) */
-  overflow-y: auto;    /* 내용이 넘치면 세로 스크롤 생성 */
-
-  /* optional: 스크롤바와 본문이 붙지 않게 여백 추가 */
+  max-height: 600px;
+  overflow-y: auto;
 }
 
 /* 개별 카드 */
 .plan_card {
   padding: 10px;
   margin: 10px;
-
   position: relative;
   display: flex;
   flex-shrink: 0;
@@ -108,37 +102,29 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   cursor: pointer;
+  transition: transform 0.2s;
 }
 .plan_card:hover {
-  background-color: #fff;
   transform: scale(1.05);
 }
 
 .plan_card__add-button {
   padding: 10px;
   margin: 10px;
-
   position: relative;
   display: flex;
   flex-shrink: 0;
   height: 220px;
   width: 520px;
-
   background-color: #f9f9f9;
   border: 2px dashed #ccc;
   border-radius: 20px;
-
-  display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 2rem;
   color: #666;
   cursor: pointer;
-
-  /* 부드러운 호버 이펙트 */
   transition: background-color 0.2s ease, color 0.2s ease;
-
 }
 .plan_card__add-button:hover {
   background: #e8e8e8;
@@ -148,7 +134,7 @@
 /* 카드 이미지 (왼쪽) */
 .plan_card__image {
   width: 230px;
-  height: "100%";
+  height: 100%;
   object-fit: cover;
   border-radius: 20px;
 }
@@ -158,11 +144,9 @@
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   flex: 1;
 }
 
-/* 카드 제목 + 하트 버튼 */
 .plan_card__title {
   display: flex;
   justify-content: space-between;
@@ -172,50 +156,26 @@
   color: #1f2a56;
 }
 
-.plan_card__edit {
-  position: absolute;
-  top: 12px;
-  right: 60px;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.9);
-  border: none;
-  color: #494949;
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.2s, transform 0.2s;
-}
-.plan_card__edit:hover {
-  background-color: #fff;
-  transform: scale(1.1);
-}
-
+.plan_card__edit,
 .plan_card__delete {
   position: absolute;
   top: 12px;
-  right: 12px;
   width: 35px;
   height: 35px;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.9);
   border: none;
-  color: #ff3366;
-  font-size: 2rem;
-  line-height: 1;
-  cursor: pointer;
+  font-size: 1.0rem;
   display: flex;
   justify-content: center;
   align-items: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: background-color 0.2s, transform 0.2s;
+  cursor: pointer;
 }
+.plan_card__edit { right: 60px; color: #494949; line-height: 1; }
+.plan_card__delete { right: 12px; color: #ff3366; font-size: 2rem; line-height: 1; }
+.plan_card__edit:hover,
 .plan_card__delete:hover {
   background-color: #fff;
   transform: scale(1.1);
@@ -230,32 +190,17 @@
   text-shadow: 0 0 4px rgba(0,0,0,0.5);
   cursor: pointer;
 }
-.plan_card__favorite:hover {
-  transform: scale(1);
-}
-.plan_card__favorite.--active {
-  color: #f54a58;
-}
+.plan_card__favorite:hover { transform: scale(1); }
+.plan_card__favorite.--active { color: #f54a58; }
 
-/* 카드 설명 텍스트 */
 .plan_card__desc {
   font-size: 0.9rem;
   color: #5a5d7d;
   margin: 0.5rem 0;
-  white-space: pre-wrap; /* 줄바꿈(\n)을 반영 */
+  white-space: pre-wrap;
 }
 
-/* 카드 주소 (아이콘 + 텍스트) */
-.plan_card__address {
-  display: flex;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #77798f;
-}
-
-.plan_card__address-icon {
-  margin-right: 0.5rem;
-}
+.plan_card__address-icon { margin-right: 0.5rem; }
 
 /* 3-2) 우측 지도 영역 */
 .plan-page__map {
@@ -267,8 +212,6 @@
   position: relative;
   overflow: hidden;
 }
-
-/* 지도가 실제로 들어갈 플레이스홀더 */
 .map-placeholder {
   width: 100%;
   height: 100%;
@@ -279,4 +222,55 @@
   color: #a1a6bf;
   font-size: 1rem;
   user-select: none;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .plan-page__controls {
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 0 1rem 2rem;
+  }
+
+  .search input {
+    width: 90%;
+    min-width: unset;
+  }
+
+  .plan-page__content {
+    flex-direction: column;
+  }
+
+  .plan-page__list,
+  .plan-page__map {
+    width: 100%;
+  }
+
+  .plan_card,
+  .plan_card__add-button {
+    flex-direction: column;
+    max-width: 100%;
+    width: 90%;
+    height: 40%;
+    margin: 0 auto 1rem;
+  }
+
+  .plan_card__image {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 20px;
+
+  }
+
+  .plan-page__list {
+    max-height: none;
+    overflow-y: visible;
+    padding: 0;
+  }
+
+  .plan-page__map {
+    min-height: 300px;
+
+  }
 }

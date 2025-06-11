@@ -170,3 +170,29 @@
 .modal_edit_btn-create:hover {
   background-color: #0051c7;
 }
+
+.modal_edit_plan_card {
+  cursor: grab;
+}
+.modal_edit_plan_card:active {
+  cursor: grabbing;
+}
+@media (max-width: 768px) {
+  /* 모달 전체를 flex 컬럼 배치 + 화면 높이 제한 */
+  .modal_edit_modal {
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+  }
+
+  /* 헤더·푸터는 고정, 본문만 늘어나서 스크롤 */
+  .modal_edit_modal-header,
+  .modal_edit_modal-footer {
+    flex: 0 0 auto;
+  }
+
+  .modal_edit_modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+}

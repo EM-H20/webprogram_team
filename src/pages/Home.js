@@ -1,3 +1,4 @@
+// Home.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
@@ -19,25 +20,27 @@ export default function Home() {
         <p className="hero__subtitle">
           “Plan your next adventure with ease and convenience.”
         </p>
-        <button className="hero__button" onClick={handleGetStarted}>Get Started</button>
+        <button className="hero__button" onClick={handleGetStarted}>
+          Get Started
+        </button>
       </section>
 
-      {/* Info + Map + Cards Section */}
+      {/* Info + Video Section */}
       <section className="info">
         <h2 className="info__title">
           “Plan Your Perfect Getaway With Easy-To-Use Tools.”
         </h2>
         <div className="info__body">
           <video
-              src={tutorialVedio}
-              autoPlay
-              loop
-              muted
-              width="100%"
-              height="100%"
-            >
-              Your browser does not support the video tag.
-            </video>
+            src={tutorialVedio}
+            autoPlay
+            loop
+            muted
+            width="100%"
+            height="100%"
+          >
+            Your browser does not support the video tag.
+          </video>
         </div>
       </section>
     </>

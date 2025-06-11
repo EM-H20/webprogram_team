@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './Modal.css';
 
-export default function PlanModal({ visible, onClose, onCreate, planName, setPlanName, description, setDescription, address, setAddress, uploadedImage, setUploadedImage, imagePreview, setImagePreview }) {
+export default function PlanModal({ visible, onClose, onCreate, planName, setPlanName, description, setDescription, uploadedImage, setUploadedImage, imagePreview, setImagePreview }) {
   const fileInputRef = useRef(null);
 
   if (!visible) return null;
@@ -67,16 +67,6 @@ export default function PlanModal({ visible, onClose, onCreate, planName, setPla
             value={description}
             onChange={e => setDescription(e.target.value)}
           />
-
-          <label className="modal-label">Address</label>
-          <div className="modal-input-group">
-            <input
-              type="text"
-              placeholder="주소"
-              value={address}
-              onChange={e => setAddress(e.target.value)}
-            />
-          </div>
 
           {/* 이미지 업로드 섹션 */}
           <div className="plan_image-upload-section">

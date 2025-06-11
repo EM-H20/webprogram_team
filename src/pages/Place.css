@@ -46,7 +46,6 @@
   font-size: 1rem;
   color: #666;
   transition: background 0.2s, color 0.2s;
-  
 }
 .tab:hover {
   background: rgba(51, 102, 255, 0.1);
@@ -299,4 +298,31 @@
 .guide-text strong {
   color: #3366ff;
   font-weight: bold;
+}
+
+/* ===== 반응형 (모바일) ===== */
+@media (max-width: 768px) {
+  .plan-page__controls {
+    flex-direction: column;
+  }
+  .tab {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.7rem;
+    color: #666;
+    transition: background 0.2s, color 0.2s;
+  }
+  .tab:hover {
+    background: rgba(51, 102, 255, 0.1);
+  }
+  .tab--active {
+    background: #fff;
+    color: #3366ff;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
 }

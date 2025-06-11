@@ -147,3 +147,14 @@
 .btn-create:hover {
   background-color: #0051c7;
 }
+
+/* ===== 반응형 (모바일) ===== */
+@media (max-width: 768px) {
+  .modal-input-group input {
+    width: 85%;
+    padding: 8px 36px 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+}

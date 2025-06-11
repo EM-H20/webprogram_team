@@ -370,3 +370,15 @@
   color: #888;
   font-family: monospace;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .input-group input,
+  .input-group textarea {
+    width: 93%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+}

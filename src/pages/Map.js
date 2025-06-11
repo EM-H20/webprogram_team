@@ -3,7 +3,9 @@ import './Map.css';
 import defaultImage from '../assets/dafault-place.png'; // 새로 추가된 기본 이미지 사용
 
 // InfoWindow 생성 및 오픈을 담당하는 함수 (컴포넌트 내부에서 사용)
-async function openInfoWindow({ map, marker, lat, lng, address }) {
+export const infoWindowRef = { current: null };
+
+export async function openInfoWindow({ map, marker, lat, lng, address }) {
   const place = await getPlaceNameFromCoords(lat, lng);
   const infoWindow = new window.naver.maps.InfoWindow({
     content: `
@@ -18,6 +20,7 @@ async function openInfoWindow({ map, marker, lat, lng, address }) {
     anchorSize: new window.naver.maps.Size(10, 10)
   });
   infoWindow.open(map, marker);
+  infoWindowRef.current = infoWindow;
 }
 
 const searchNaverPlace = async (query) => {
@@ -54,32 +57,15 @@ const getNearestPlace = (lat, lng, items) => {
   return items.sort((a, b) => a.distance - b.distance)[0]; // 가장 가까운 1개
 };
 
-async function showRouteBetweenPoints({ startLat, startLng, endLat, endLng, map }) {
+// 두 점 사이의 경로 그려주는 함수
+export async function showRouteBetweenPoints({ startLat, startLng, endLat, endLng, map }) {
   const routeData = await fetchNaverRoute(startLat, startLng, endLat, endLng);
   if (routeData) {
-    drawRouteOnMap(map, routeData);
+    return drawRouteOnMap(map.current, routeData);
   }
 }
 
-let currentRoutePolyline = null;
-
-function drawRouteOnMap(map, pathData) {
-  if (!pathData?.route?.traoptimal?.[0]?.path) {
-    console.log('경로 데이터가 올바르지 않습니다.');
-    return;
-  }
-
-  const rawPath = pathData.route.traoptimal[0].path;
-  const convertedPath = rawPath.map(([lng, lat]) => new window.naver.maps.LatLng(lat, lng));
-
-  currentRoutePolyline = new window.naver.maps.Polyline({
-    map: map,
-    path: convertedPath,
-    strokeColor: '#007BFF',
-    strokeWeight: 5
-  });
-}
-
+// pathData 받아오는 함수
 async function fetchNaverRoute(startLat, startLng, endLat, endLng) {
   const start = `${startLng},${startLat}`;  // 경로는 "lng,lat" 순서
   const goal = `${endLng},${endLat}`;
@@ -94,8 +80,60 @@ async function fetchNaverRoute(startLat, startLng, endLat, endLng) {
   }
 }
 
+// pathData로 맵에 경로 그리는 함수
+function drawRouteOnMap(map, pathData) {
+  if (!pathData?.route?.traoptimal?.[0]?.path) {
+    console.log('경로 데이터가 올바르지 않습니다.');
+    return;
+  }
+
+  const rawPath = pathData.route.traoptimal[0].path;
+  const convertedPath = rawPath.map(([lng, lat]) => new window.naver.maps.LatLng(lat, lng));
+
+  const polyline = new window.naver.maps.Polyline({
+    map: map,
+    path: convertedPath,
+    strokeColor: '#007BFF',
+    strokeWeight: 5
+  });
+  const arrowMarkers = addArrowMarkers(convertedPath, map);
+  return [polyline, arrowMarkers];
+}
+
+// 경로에서 방향 나타내는 화살표 그려주는 함수
+function addArrowMarkers(path, map) {
+  let markers = [];
+  const interval = 10;
+  for (let i = interval; i < path.length; i+=interval) {
+    const prev = path[i-1];
+    const curr = path[i];
+  
+    const dx = curr.lng() - prev.lng();
+    const dy = curr.lat() - prev.lat();
+    const angle = Math.atan2(dx, dy) * 180 / Math.PI - 90;
+  
+    const midLat = (prev.lat() + curr.lat()) / 2;
+    const midLng = (prev.lng() + curr.lng()) / 2;
+  
+    const newMarker = new window.naver.maps.Marker({
+      position: new window.naver.maps.LatLng(midLat, midLng),
+      map,
+      icon: {
+        content: `<div style="
+          transform: rotate(${angle}deg);
+          font-size: 20px;
+          color: red;
+        ">➤</div>`,
+        anchor: new window.naver.maps.Point(8, 8)
+      }
+    });
+    markers.push(newMarker)
+  }
+  return markers;
+}
+
 // 중복 제거: 기존 마커 제거
-function removeCurrentMarker(markerRef) {
+export function removeCurrentMarker(markerRef) {
   if (markerRef.current) {
     markerRef.current.setMap(null);
   }
@@ -116,7 +154,7 @@ function updateMarkerInfo(setMarkerInfo, lat, lng, address) {
   setMarkerInfo({ lat, lng, address });
 }
 
-function getAddress(address) {
+export function getAddress(address) {
   return address.roadAddress || address.jibunAddress;
 }
 
@@ -452,8 +490,6 @@ function Map() {
         // 클릭한 위치 좌표
         const clickedPosition = e.coord;
         
-        const beforemarker = markerRef.current;
-        
         // 기존 마커 제거
         removeCurrentMarker(markerRef)
         
@@ -493,21 +529,6 @@ function Map() {
             lng: clickedPosition.lng(),
             address: address
           };
-          
-          // 두 지점 사이에 경로가 잘 그려지는지 임시로 작성한 코드
-          // if(beforemarker != null) {
-          //   const beforeLat = beforemarker.getPosition().lat();
-          //   const beforeLng = beforemarker.getPosition().lng();
-            
-          //   if(currentRoutePolyline) currentRoutePolyline.setMap(null);
-          //   showRouteBetweenPoints({
-          //     startLat: beforeLat,
-          //     startLng: beforeLng,
-          //     endLat: clickedPosition.lat(),
-          //     endLng: clickedPosition.lng(),
-          //     map: map
-          //   });
-          // }
           
           setMarkerInfo(markerData);
           setCustomAddress(address); // 초기 주소를 사용자 입력용 상태에 설정
@@ -550,7 +571,7 @@ function Map() {
       </div>
 
       <div className="map-container">
-        <div id="map" style={{ width: '100%', height: '500px', border: '1px solid #ddd' }}></div>
+        <div id="map" style={{ width: '100%', height: '600px', border: '1px solid #ddd' }}></div>
       </div>
       
       {showInput && markerInfo && (

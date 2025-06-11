@@ -1,3 +1,6 @@
+/* Footer.css */
+
+/* 공통 스타일 (데스크탑 기준) */
 .footer {
   margin-top: auto;
   padding: 1rem 2rem;
@@ -21,10 +24,10 @@
   margin: 0;
 }
 
+/* 데스크탑에서 네비를 가운데 배치하려고 했던 기존 absolute 방식은
+   flex 기반으로 단순화합니다. */
 .footer__nav {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  /* position, transform 제거 → 자동으로 flex 우측에 붙음 */
 }
 
 .footer__link {
@@ -32,10 +35,33 @@
   font-weight: 600;
   text-decoration: none;
   transition: text-decoration 0.2s;
-  
 }
 
 .footer__link:hover,
 .footer__link:focus {
   text-decoration: underline;
+}
+
+/* ===== 반응형 (모바일) ===== */
+@media (max-width: 768px) {
+  .footer {
+    flex-direction: column;   /* 세로 스택 */
+    text-align: center;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .footer__logo {
+    margin-bottom: 0.5rem;
+  }
+
+  .footer__nav {
+    width: 100%;
+  }
+
+  .footer__links {
+    justify-content: center;  /* 메뉴 중앙 정렬 */
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
