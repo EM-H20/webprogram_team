@@ -231,6 +231,22 @@
     align-items: flex-start;
     margin: 0 1rem 2rem;
   }
+  @media (max-width: 768px) {
+    /* 모바일 환경에서 지도 영역의 높이와 너비를 명확하게 지정 */
+    .plan-page__map {
+      min-height: 350px;   /* 최소 높이 지정 (지도가 너무 작게 나오지 않도록) */
+      height: 350px;       /* 고정 높이로 지정 */
+      width: 100%;         /* 부모 영역을 가득 채움 */
+      margin-bottom: 1rem; /* 아래 여백 추가 */
+    }
+    /* 실제 네이버 맵이 들어가는 #map 요소의 크기를 100%로 맞춤 */
+    #map {
+      width: 100%;         /* 부모(.plan-page__map)를 가득 채움 */
+      height: 100%;        /* 부모(.plan-page__map)의 높이를 따라감 */
+      min-height: 350px;   /* 혹시 height가 무시될 때를 대비한 최소 높이 */
+      border-radius: 20px; /* 맵 테두리 둥글게 */
+    }
+  }
 
   .search input {
     width: 90%;

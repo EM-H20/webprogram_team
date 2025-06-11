@@ -131,6 +131,10 @@ export default function Plan() {
         const mapOptions = {
           center: defaultPosition,
           zoom: 17,
+          zoomControl: true, // 줌 컨트롤 활성화
+          zoomControlOptions: {
+            position: window.naver.maps.Position.TOP_RIGHT // 우측상단에 위치
+          },
           mapTypeId: window.naver.maps.MapTypeId.NORMAL,
           mapTypeControl: true,
         };
@@ -140,6 +144,10 @@ export default function Plan() {
         const map = new window.naver.maps.Map(mapElement, mapOptions);
         mapRef.current = map;
         console.log('지도 객체 생성 완료!');
+        // 모바일에서 맵이 짤리는 현상 방지: 생성 후 강제 리프레시
+        setTimeout(() => {
+          if (mapRef.current) mapRef.current.refresh();
+        }, 300);
         
         // 5. 현재 위치 가져오기
         if (navigator.geolocation) {
@@ -423,8 +431,13 @@ export default function Plan() {
 
         {/* 우측 지도 영역 */}
         <div className="plan-page__map">
-          <div id="map" className="map-placeholder">
-            지도 컴포넌트가 여기에 들어갑니다.
+          <div id="map" className="map-placeholder" style={{width: '100%', height: '100vh'}}>
+            <naver-maps
+              style={{width: '100%', height: '100%'}}
+              center={{lat: 37.3595704, lng: 127.105399}}
+              zoom={15}
+              zoomControl={true}
+            />
           </div>
         </div>
       </div>
