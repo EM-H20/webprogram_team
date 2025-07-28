@@ -48,24 +48,24 @@
   </thead>
   <tbody>
     <tr>
-      <td>홍의민</td>
-      <td>기획/디자인 리드</td>
-      <td>UI/UX 설계, 문서 작성, 코드 리뷰</td>
+      <td><strong>홍의민</strong></td>
+      <td>기획/디자인 리드, <u>스크럼 마스터</u></td>
+      <td>UI/UX 설계, 문서 작성, 코드 리뷰, 프로젝트 전체 진행 관리 및 이슈 해결</td>
     </tr>
     <tr>
       <td>김서진</td>
-      <td>지도/데이터</td>
-      <td>지도 API 연동, 명소 마커 처리</td>
+      <td>지도/데이터, <u>테크 리드</u></td>
+      <td>지도 API 연동, 명소 마커 처리, 기술 아키텍처 설계</td>
     </tr>
     <tr>
       <td>심준보</td>
-      <td>일정 관리</td>
-      <td>일정 CRUD, 드래그 앤 드롭 기능</td>
+      <td>일정 관리, <u>QA 리드</u></td>
+      <td>일정 CRUD, 드래그 앤 드롭 기능, 테스트 및 품질 관리</td>
     </tr>
     <tr>
       <td>엄태경</td>
-      <td>UI/UX</td>
-      <td>반응형 웹, 애니메이션, 로컬 저장</td>
+      <td>UI/UX, <u>UX 리드</u></td>
+      <td>반응형 웹, 애니메이션, 로컬 저장, 접근성 및 사용자 경험 개선</td>
     </tr>
   </tbody>
 </table>
@@ -82,7 +82,7 @@
 
 <h2>📂 산출물</h2>
 <ul>
-  <li>React Web Application</li>
+  <li>React Web Application (JS 기반)</li>
   <li>Figma 기반 와이어프레임 및 UI 시안</li>
   <li>API 명세서, 기술 문서, 사용자 매뉴얼</li>
   <li>최종 발표 자료 및 시연 영상</li>
